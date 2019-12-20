@@ -39,7 +39,7 @@ Type
     FController : Pointer;
 
   Protected
-    Procedure Created(); Virtual;
+//    Procedure Created(); Virtual;
 
     //IInterface
     Function QueryInterface(Const IID: TGUID; Out Obj) : HResult; Virtual; StdCall;
@@ -167,8 +167,6 @@ Type
     FList : TThreadList;
 
   Protected
-    Procedure Created(); OverRide;
-
     Function GetItemClass() : TInterfacedObjectExClass; Virtual;
     Function GetEnumeratorClass() : TInterfaceExEnumeratorClass; Virtual;
     Procedure Notify(Ptr : Pointer; Action : TListNotification); Virtual;
@@ -205,9 +203,10 @@ Type
 
     Property Capacity : Integer Read GetCapacity Write SetCapacity;
     Property Count    : Integer Read GetCount    Write SetCount;
-    
+
   Public
-    Destructor  Destroy(); OverRide;
+    Procedure AfterConstruction(); OverRide;
+    Procedure BeforeDestruction(); OverRide;
 
   End;
 
@@ -493,8 +492,6 @@ Begin
   FController   := Pointer(Controller);
   FIsContained  := AIsContained;
   FHaveRefCount := False;
-
-  Created();
 End;
 
 Constructor TInterfacedObjectEx.Create(Const AHaveRefCount : Boolean = True);
@@ -503,8 +500,6 @@ Begin
 
   FController   := Nil;
   FHaveRefCount := AHaveRefCount;
-
-  Created();
 End;
 
 Class Function TInterfacedObjectEx.NewInstance() : TObject;
@@ -527,11 +522,6 @@ End;
 Function TInterfacedObjectEx.IsImplementorOf(Const I : IInterfaceEx) : Boolean;
 Begin
   Result := I.InterfaceObject = Self;
-End;
-
-Procedure TInterfacedObjectEx.Created();
-Begin
-
 End;
 
 Function TInterfacedObjectEx.QueryInterface(Const IID: TGUID; Out Obj) : HResult;
@@ -710,19 +700,19 @@ Begin
   End;
 End;
 
-Procedure TInterfaceListEx.Created();
+Procedure TInterfaceListEx.AfterConstruction();
 Begin
-  InHerited Created();
+  InHerited AfterConstruction();
 
   FList := TThreadList.Create();
 End;
 
-Destructor TInterfaceListEx.Destroy();
+Procedure TInterfaceListEx.BeforeDestruction();
 Begin
   Clear();
   FreeAndNil(FList);
 
-  Inherited Destroy();
+  Inherited BeforeDestruction();
 End;
 
 Procedure TInterfaceListEx.Notify(Ptr : Pointer; Action : TListNotification);

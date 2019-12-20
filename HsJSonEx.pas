@@ -113,8 +113,6 @@ Type
     Function  GetChildNodeClass(Const Path : String; Const AIsList : Boolean = False) : THsJSonObjectClass;
 
   Protected
-    Procedure Created(); OverRide;
-
     Function  GetName() : String;
     Procedure SetName(Const AName : String);
 
@@ -301,15 +299,6 @@ Begin
   
   FLstChildClass := TStringList.Create();
   FParent := Nil;
-End;
-
-Procedure THsJSonObject.Created();
-Begin
-  InHerited Created();
-{
-  FLstChildClass := TStringList.Create();
-  FParent := Nil;
-}  
 End;
 
 Class Function THsJSonObject.GetDocBinding(AObject : IHsJSonObject; Const ANodeClass : THsJSonObjectClass) : IHsJSonObject;
