@@ -145,24 +145,25 @@ Type
 
   End;
 
-  TInterfaceExEnumeratorClass = Class Of TInterfaceExEnumerator;
-  TInterfaceExEnumerator = Class(TInterfacedObjectEx, IInterfaceExEnumerator)
-  {$If CompilerVersion >= 18.5}Strict{$IfEnd} Private
-    FList  : IInterfaceListEx;
-    FIndex : Integer;
-    
-  Protected
-    Function GetCurrent() : IInterfaceEx;
-    Function MoveNext() : Boolean;
-
-    Property Current : IInterfaceEx Read GetCurrent;
-
-  Public
-    Constructor Create(AList : IInterfaceListEx); ReIntroduce;
-    
-  End;
-
   TInterfaceListEx = Class(TInterfacedObjectEx, IInterfaceListEx)
+  {$If CompilerVersion >= 18.5}Strict{$IfEnd} Protected Type
+    TInterfaceExEnumeratorClass = Class Of TInterfaceExEnumerator;
+    TInterfaceExEnumerator = Class(TInterfacedObjectEx, IInterfaceExEnumerator)
+    {$If CompilerVersion >= 18.5}Strict{$IfEnd} Private
+      FList  : IInterfaceListEx;
+      FIndex : Integer;
+
+    Protected
+      Function GetCurrent() : IInterfaceEx;
+      Function MoveNext() : Boolean;
+
+      Property Current : IInterfaceEx Read GetCurrent;
+
+    Public
+      Constructor Create(AList : IInterfaceListEx); ReIntroduce;
+
+    End;
+
   {$If CompilerVersion >= 18.5}Strict{$IfEnd} Private
     FList : TThreadList;
 
@@ -210,6 +211,9 @@ Type
 
   End;
 
+  TInterfaceExEnumerator = TInterfaceListEx.TInterfaceExEnumerator;
+  TInterfaceExEnumeratorClass = TInterfaceListEx.TInterfaceExEnumeratorClass;
+  
 Procedure RegisterInterface(Const AInterfaceName : String; Const AIID : TGUID);
 
 Function GetInterfaceName(Const AIID : TGUID) : String; OverLoad;
@@ -676,7 +680,7 @@ End;
 
 (******************************************************************************)
 
-Constructor TInterfaceExEnumerator.Create(AList : IInterfaceListEx);
+Constructor TInterfaceListEx.TInterfaceExEnumerator.Create(AList : IInterfaceListEx);
 Begin
   InHerited Create(True);
 
@@ -684,12 +688,12 @@ Begin
   FIndex := -1;
 End;
 
-Function TInterfaceExEnumerator.GetCurrent() : IInterfaceEx;
+Function TInterfaceListEx.TInterfaceExEnumerator.GetCurrent() : IInterfaceEx;
 Begin
   Result := FList[FIndex];
 End;
 
-Function TInterfaceExEnumerator.MoveNext() : Boolean;
+Function TInterfaceListEx.TInterfaceExEnumerator.MoveNext() : Boolean;
 Begin
   If (FIndex >= FList.Count) Then
     Result := False
